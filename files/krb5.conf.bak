@@ -2,9 +2,9 @@
 includedir /etc/krb5.conf.d/
 
 [logging]
- default = FILE:/var/log/krb5libs.log
- kdc = FILE:/var/log/krb5kdc.log
- admin_server = FILE:/var/log/kadmind.log
+ default = FILE:/srv/kerberos/log/krb5libs.log
+ kdc = FILE:/srv/kerberos/log/krb5kdc.log
+ admin_server = FILE:/srv/kerberos/log/kadmind.log
 
 [libdefaults]
  dns_lookup_realm = false
@@ -19,11 +19,11 @@ includedir /etc/krb5.conf.d/
 
 [realms]
 HADOOP.COM = {
-  kdc = hadoop-1
-  admin_server = hadoop-1
+  kdc = hadoop-server-004
+  admin_server = hadoop-server-004
   #default_domain = HADOOP.COM
  }
 
 [domain_realm]
- #.example.com = HADOOP.COM
- #example.com = HADOOP.COM
+ .hadoop.com = HADOOP.COM
+ hadoop.com = HADOOP.COM

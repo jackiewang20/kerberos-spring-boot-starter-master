@@ -47,6 +47,10 @@ public class KerberosProperties {
      */
     private String principalPassword;
 
+    /**
+     * 登录认证模块配置文件路径，配合kerberos主体账号、密码使用
+     */
+    private String authLoginModuleConfig;
 
     public Boolean getAuthorization() {
         return authorization;
@@ -104,5 +108,11 @@ public class KerberosProperties {
         this.principalPassword = principalPassword;
     }
 
+    public String getAuthLoginModuleConfig() {
+        return authLoginModuleConfig;
+    }
 
+    public void setAuthLoginModuleConfig(String authLoginModuleConfig) {
+        this.authLoginModuleConfig = authLoginModuleConfig;
+    }
 }
