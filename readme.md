@@ -43,8 +43,13 @@
 配置文件属性配置hbase.keytab、jaas.conf、krb5.conf，启动krb5.conf完整的配置信息从kerberos服务器中复制。
 
 完整配置参考：
+kerberos认证基础配置
 application-kerberos.properties
 
+hbase开启kerberos认证
+application-hbase.properties
+说明：如果不使用application-hbase.properties中的kerberos认证，则在resources文件夹中配置hbase-site.xml，
+但是这样会存在弊端，如果kerberos认证账号等属性配置修改，需要重新更新该文件，并部署项目。
 
 #4.测试
 HBaseProviderApp测试服务
