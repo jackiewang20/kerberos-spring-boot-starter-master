@@ -7,8 +7,22 @@
 
 #2.maven依赖
 ##2.1.kerberos-spring-boot-stater maven依赖
-        <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包依赖guava冲突，
-        排除即可；不用排除整个hadoop-common,否则造成krb5.conf不能正确读取 -->
+        <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包冲突，
+        排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
+ 方法1：
+         <dependency>
+             <artifactId>kerberos-spring-boot-stater</artifactId>
+             <groupId>com.example</groupId>
+             <version>1.0.0-SNAPSHOT</version>
+             <exclusions>
+                 <exclusion>
+                     <artifactId>hadoop-common</artifactId>
+                     <groupId>org.apache.hadoop</groupId>
+                 </exclusion>
+             </exclusions>
+         </dependency>       
+        
+ 方法2：
         <!-- 自定义kerberos认证stater -->
         <dependency>
             <artifactId>kerberos-spring-boot-stater</artifactId>
@@ -72,7 +86,7 @@ public class HbaseKerberosProviderApp {
 但是，在客户端服务中引入了两个stater组件，优先加载顺序实际根据主程序具体调用的某个stater中的bean优先加载。
 
 #5.Q&A
-##4.1.Q:guava-18.0.jar多个版本jar包冲突
+##5.1.Q:guava-18.0.jar多个版本jar包冲突
 R:
 Description:
 
@@ -113,7 +127,7 @@ A:
         </dependency>
 
 
-##4.2.Q:Can't get Kerberos realm
+##5.2.Q:Can't get Kerberos realm
 R:不能正常加载krb5.conf文件造成的错误。
 
 A:

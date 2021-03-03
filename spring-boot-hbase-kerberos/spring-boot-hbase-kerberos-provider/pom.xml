@@ -16,8 +16,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包依赖guava冲突，
-        排除即可；不用排除整个hadoop-common,否则造成krb5.conf不能正确读取 -->
+        <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包冲突，
+        排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
         <!-- 自定义kerberos认证stater -->
         <dependency>
             <artifactId>kerberos-spring-boot-stater</artifactId>
@@ -25,8 +25,8 @@
             <version>1.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
+                    <artifactId>hadoop-common</artifactId>
+                    <groupId>org.apache.hadoop</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -38,11 +38,11 @@
         </dependency>
 
         <!-- 依赖新版本的guava -->
-        <dependency>
+<!--        <dependency>
             <groupId>com.google.guava</groupId>
             <version>21.0</version>
             <artifactId>guava</artifactId>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
 
