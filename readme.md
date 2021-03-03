@@ -39,7 +39,14 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
-#3.测试
+#3.属性配置
+配置文件属性配置hbase.keytab、jaas.conf、krb5.conf，启动krb5.conf完整的配置信息从kerberos服务器中复制。
+
+完整配置参考：
+application-kerberos.properties
+
+
+#4.测试
 HBaseProviderApp测试服务
 启动类HbaseKerberosProviderApp，声明KerberosObject初始化Bean，优先加装kerberos。
 
@@ -59,7 +66,7 @@ public class HbaseKerberosProviderApp {
 
 但是，在客户端服务中引入了两个stater组件，优先加载顺序实际根据主程序具体调用的某个stater中的bean优先加载。
 
-#4.Q&A
+#5.Q&A
 ##4.1.Q:guava-18.0.jar多个版本jar包冲突
 R:
 Description:
