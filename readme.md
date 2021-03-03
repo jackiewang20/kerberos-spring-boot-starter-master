@@ -1,0 +1,118 @@
+#hbase-spring-boot-stater集成kerberos操作hbase
+
+#1.背景
+使用自定义kerberos-spring-boot-stater，hbase-spring-boot-stater组件进行开发。
+
+由于大数据平台hadoop和hbase集群集成了kerberos验证，因此链接hbase之前首先进行kerberos身份认证，认证通过后可以访问hbase数据库。
+
+#2.maven依赖
+##2.1.kerberos-spring-boot-stater maven依赖
+        <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包依赖guava冲突，
+        排除即可；不用排除整个hadoop-common,否则造成krb5.conf不能正确读取 -->
+        <!-- 自定义kerberos认证stater -->
+        <dependency>
+            <artifactId>kerberos-spring-boot-stater</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- 依赖新版本的guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <version>21.0</version>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+
+##2.2.hbase-spring-boot-stater maven依赖
+
+        <!-- 自定义hbase stater -->
+        <dependency>
+            <artifactId>hbase-spring-boot-stater</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+#3.测试
+HBaseProviderApp测试服务
+启动类HbaseKerberosProviderApp，声明KerberosObject初始化Bean，优先加装kerberos。
+
+@SpringBootApplication(scanBasePackages = {"com.example.hbase.kerberos.provider"})
+public class HbaseKerberosProviderApp {
+    @Autowired
+    private KerberosObject kerberosObject;
+
+    public static void main(String[] args) {
+        SpringApplication.run(HbaseKerberosProviderApp.class, args);
+    }
+
+}
+
+说明：Spring Bean加装顺序可以通过@Order注解设置加载顺序，如果是自定义AutoConfiguration使用@AutoConfigureOrder。
+当前项目使用hbase需要先进行kerberos认证，因此需要配置Bean的加载顺序，保障kerberos优先加载。
+
+但是，在客户端服务中引入了两个stater组件，优先加载顺序实际根据主程序具体调用的某个stater中的bean优先加载。
+
+#4.Q&A
+##4.1.Q:guava-18.0.jar多个版本jar包冲突
+R:
+Description:
+
+An attempt was made to call the method com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;)V but it does not exist. Its class, com.google.common.base.Preconditions, is available from the following locations:
+
+    jar:file:/D:/java-component/maven/repos/com/google/guava/guava/18.0/guava-18.0.jar!/com/google/common/base/Preconditions.class
+
+It was loaded from the following location:
+
+    file:/D:/java-component/maven/repos/com/google/guava/guava/18.0/guava-18.0.jar
+
+
+Action:
+
+Correct the classpath of your application so that it contains a single, compatible version of com.google.common.base.Preconditions
+
+A:
+        <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包依赖guava冲突，
+        排除即可；不用排除整个hadoop-common,否则造成krb5.conf不能正确读取 -->
+        <!-- 自定义kerberos认证stater -->
+        <dependency>
+            <artifactId>kerberos-spring-boot-stater</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- 依赖新版本的guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <version>21.0</version>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+
+##4.2.Q:Can't get Kerberos realm
+R:不能正常加载krb5.conf文件造成的错误。
+
+A:
+启动类编辑启动参数，示例如下：
+IDEA工具栏，编辑当前服务选项，Run/Debug Configurations,HBaseProviderApp,Configuration,Environment,VM options:
+-Djava.security.krb5.conf=D:\\krb5.conf
+-Djava.security.krb5.kdc=hadoop-server-003:88
+-Djava.security.krb5.realm=HADOOP.COM
+
+说明：上述报错是Can't get Kerberos realm，是因为拿不到kdc和realm，需要指定krb5.conf文件，kdc地址，realm值。
+
+针对以上属性，可以自定义属性赋值。
+
+
