@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hive.kerberos.provider.mapper.UserInfoMapper">
+
+    <select id="getById" parameterType="java.lang.Integer" resultType="com.example.hive.kerberos.provider.bean.UserInfoDO">
+        select user_id,username,pwd,email,grade,createtime from user_info
+            where user_id=#{user_id} limit 1
+    </select>
+
+    <select id="getListTop10" resultType="com.example.hive.kerberos.provider.bean.UserInfoDO">
+        select user_id,username,pwd,email,grade,createtime from user_info
+            limit 10;
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1) from user_info
+    </select>
+
+    <select id="getPageList" parameterType="com.example.hive.kerberos.provider.bean.UserInfoQUERY"
+            resultType="com.example.hive.kerberos.provider.bean.UserInfoDO">
+        <!-- select u.id,u.username,u.password from user u
+            where u.id>=(select id from user ORDER BY id asc limit 2,1)
+            ORDER BY u.id asc LIMIT 3 -->
+        <!-- kylin分页不支持子查询，join、row_number()查询性能较差，建议直接使用limit m,n -->
+
+
+        select user_id,username,pwd,email,grade,createtime from user_info u
+        <!-- where user_id=#{userInfoDO.user_id} -->
+        <!--  -->
+        order by u.user_id asc limit ${offset},${pageSize}
+
+    </select>
+
+
+
+</mapper>

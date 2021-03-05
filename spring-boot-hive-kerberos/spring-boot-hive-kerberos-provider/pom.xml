@@ -11,6 +11,99 @@
 
     <artifactId>spring-boot-hive-kerberos-provider</artifactId>
 
+    <dependencies>
+        <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包冲突，
+排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
+        <!-- 自定义kerberos认证stater -->
+        <dependency>
+            <artifactId>kerberos-spring-boot-stater</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hadoop-common</artifactId>
+                    <groupId>org.apache.hadoop</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 子模块 -->
+        <dependency>
+            <artifactId>common</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- consul服务配置 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-config</artifactId>
+        </dependency>
+        <!-- consul服务发现 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+        </dependency>
+
+        <!-- 服务健康检查 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- 第三方依赖配置 -->
+        <!-- hive jdbc -->
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-jdbc</artifactId>
+            <version>2.3.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.aggregate</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- mysql和数据库连接池druid依赖配置 -->
+        <!-- mysql -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!-- mybatis -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- jdbc -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <!--  spring boot druid连接池 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- tomcat jdbc连接池：spring-boot-stater-jdbc默认依赖 -->
+        <!--        <dependency>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>tomcat-jdbc</artifactId>
+                </dependency>-->
+
+        <!-- aop依赖 -->
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
+    </dependencies>
+
     <build>
         <!-- 默认源代码和资源文件目录配置 -->
         <sourceDirectory>src/main/java</sourceDirectory>

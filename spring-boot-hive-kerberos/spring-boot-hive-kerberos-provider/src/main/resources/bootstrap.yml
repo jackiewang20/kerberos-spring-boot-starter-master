@@ -1,0 +1,83 @@
+# ================== 提供者服务consul详细配置 ==================
+server:
+  port: 8080
+
+# 加载环境配置：dev（开发环境）,test（测试环境）,prod（生产环境）
+# 分别对应application-dev.properties,application-test.properties,application-prod.properties
+spring:
+  profiles:
+    active: dev
+    # 【注意】1.加载数据库连接池druid配置:druid(mysql),hive-druid(hive)
+    include: hive-druid,kerberos
+  # 【注意】2.当前服务名称
+  application:
+    name: spring-boot-hive-kerberos-provider
+  cloud:
+    consul:
+      enabled: false
+      # 【注意】3.consul地址
+      host: 172.16.26.121
+      port: 8500
+      discovery:
+        health-check-path: /health
+        health-check-interval: 10s
+        # 设置健康检查失败多长时间后，剔除无效服务
+        health-check-critical-timeout: 300s
+        prefer-ip-address: true
+        # 【注意】4.多网卡需要显示指定当前服务IP地址，避免配置中心配置，及多网卡多个ip随机绑定服务问题，如果集群部署不同节点，服务ip和端口不同
+        ip-address: 172.16.26.123
+        # instance-id: ${spring.application.name}:${random.value} # 【注意】5.代码中实现了动态配置实例id:服务名-ip-端口号
+        tags: foo=provider # 【可选】6.标签：任意名称，可以根据版本号或业务设计
+      config:
+        enabled: true
+        prefix: config/opf-demo/open-platform-admin-hive-provider # 【注意】7.consul配置中心目录，按业务分类创建目录
+        default-context: ${spring.application.name}  # 【注意】8.consul配置中心创建的配置文件名称规范，例如：服务名-dev.properties
+        profile-separator: '-'
+        format: files
+#    inetutils:
+#      preferred-networks: 192.168.120 # 设置部署服务的ip网段：解决多网卡冲突问题（不完全生效）
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+  # ==consul注册发现配置说明==
+  #   参考配置节点spring.cloud.consul.discovery
+
+  # ==consul配置中心配置说明==
+  # 参考配置节点spring.cloud.consul.config
+  # 1.enabled将此值设置为“false”将禁用Consul配置；
+  # 2.prefix设置配置值的基本文件夹，例如在consul ui的Key/Value菜单页中创建config目录；
+  # 3.defaultContext设置所有应用程序使用的文件夹名称；
+  # 4.profileSeparator设置分隔符的值，用于使用配置文件在属性源中分隔配置文件名称，例如；application-biz1-dev.properties,
+  # spring.profiles.active属性值为dev，spring.cloud.consul.config.default-context属性值为application，
+  # spring.cloud.consul.config.profile-separator属性值为-，因此对应consul中的配置文件为application-biz1-dev.properties
+
+
+# ==endpoints配置==
+# 引用spring-boot-actuator-1.5.20.RELEASE.jar 暴露spring boot服务的所有接口；
+# 例如localhost/health 详细参考IDEA页脚工具栏Endpoints，Mappings tab选项。
+endpoints:
+  health:
+    sensitive: false
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+
+# 注册中心登录安全配置
+management:
+  security:
+    enabled: false
+
+# ================== 更多配置 ==================
+# ==禁用eureka注册中心==
+eureka:
+  client:
+    enabled: false
+
+# ==日志配置==
+logging:
+  level:
+  # 【注意】9.自定义日志配置；spring boot默认加载日志文件logback-spring.xml
+  #logging.config=classpath:log4j2.xml
+  config: classpath:logback-mylog.xml

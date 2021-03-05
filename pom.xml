@@ -8,6 +8,7 @@
         <module>spring-boot-hbase-kerberos</module>
         <module>spring-boot-hdfs-kerberos</module>
         <module>spring-boot-hive-kerberos</module>
+        <module>common</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -24,7 +25,19 @@
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Edgware.SR5</spring-cloud.version>
+
+        <!-- 第三方依赖包版本 -->
+        <spring-cloud-starter-consul-discovery.version>1.3.5.RELEASE</spring-cloud-starter-consul-discovery.version>
+        <spring-cloud-starter-consul-config.version>1.3.5.RELEASE</spring-cloud-starter-consul-config.version>
+        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <mybatis-spring-boot-starter.version>1.3.1</mybatis-spring-boot-starter.version>
+        <druid-spring-boot-starter.version>1.1.10</druid-spring-boot-starter.version>
+        <fastjson.version>1.2.35</fastjson.version>
+        <aopalliance.version>1.0</aopalliance.version>
+        <aspectjweaver.version>1.8.9</aspectjweaver.version>
+        <mybatis-spring.version>1.3.1</mybatis-spring.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -46,7 +59,72 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- 第三方依赖配置 -->
+
+            <!-- fastjson -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- consul服务配置 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-consul-config</artifactId>
+                <version>${spring-cloud-starter-consul-config.version}</version>
+            </dependency>
+            <!-- consul服务发现 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+                <version>${spring-cloud-starter-consul-discovery.version}</version>
+            </dependency>
+            <!-- 服务健康检查（spring boot组件，子模块引用即可，无需版本管理） -->
+            <!--    <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-actuator</artifactId>
+                </dependency>-->
+
+
+            <!-- mysql和数据库连接池druid依赖配置 -->
+            <!-- mysql -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java.version}</version>
+            </dependency>
+            <!-- mybatis -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-spring-boot-starter.version}</version>
+            </dependency>
+
+            <!--  spring boot druid连接池 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid-spring-boot-starter.version}</version>
+            </dependency>
+
+            <!-- aop依赖 -->
+            <dependency>
+                <groupId>aopalliance</groupId>
+                <artifactId>aopalliance</artifactId>
+                <version>${aopalliance.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectjweaver.version}</version>
+            </dependency>
+
+            <!-- common包依赖性配置管理 -->
+
         </dependencies>
     </dependencyManagement>
+
 
 </project>

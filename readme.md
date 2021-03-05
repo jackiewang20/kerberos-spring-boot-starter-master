@@ -10,7 +10,7 @@
         <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包冲突，
         排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
 
-###方法1：
+###方法1
          <dependency>
              <artifactId>kerberos-spring-boot-stater</artifactId>
              <groupId>com.example</groupId>
@@ -23,7 +23,7 @@
              </exclusions>
          </dependency>       
         
-###方法2：
+###方法2
         <!-- 自定义kerberos认证stater -->
         <dependency>
             <artifactId>kerberos-spring-boot-stater</artifactId>
