@@ -11,6 +11,7 @@
         排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
 
 ###方法1
+```
          <dependency>
              <artifactId>kerberos-spring-boot-stater</artifactId>
              <groupId>com.example</groupId>
@@ -22,8 +23,10 @@
                  </exclusion>
              </exclusions>
          </dependency>       
-        
+```   
+     
 ###方法2
+```
         <!-- 自定义kerberos认证stater -->
         <dependency>
             <artifactId>kerberos-spring-boot-stater</artifactId>
@@ -43,6 +46,30 @@
             <version>21.0</version>
             <artifactId>guava</artifactId>
         </dependency>
+```
+
+###方法3
+
+```
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>3.1.4</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+            <exclusions>
+        </dependency>
+
+        <!-- 依赖新版本的guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <version>21.0</version>
+            <artifactId>guava</artifactId>
+        </dependency>
+```
 
 
 ##2.2.hbase-spring-boot-stater maven依赖
@@ -105,6 +132,7 @@ Action:
 Correct the classpath of your application so that it contains a single, compatible version of com.google.common.base.Preconditions
 
 A:
+```
         <!-- kerberos stater和hbase stater分别都引用了hadoop-common，两个hadoop-common包依赖guava冲突，
         排除即可；不用排除整个hadoop-common,否则造成krb5.conf不能正确读取 -->
         <!-- 自定义kerberos认证stater -->
@@ -126,6 +154,29 @@ A:
             <version>21.0</version>
             <artifactId>guava</artifactId>
         </dependency>
+```
+或
+
+```
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>3.1.4</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+            <exclusions>
+        </dependency>
+
+        <!-- 依赖新版本的guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <version>21.0</version>
+            <artifactId>guava</artifactId>
+        </dependency>
+```
 
 
 ##5.2.Q:Can't get Kerberos realm
@@ -142,4 +193,17 @@ IDEA工具栏，编辑当前服务选项，Run/Debug Configurations,HBaseProvide
 
 针对以上属性，可以自定义属性赋值。
 
+##5.3.Q:hadoop集群配置了https后java客户端链接不上
+A：hdfs-site.xml中加入如下配置：
+```
+<configuration>
+    <property>
+        <name>dfs.encrypt.data.transfer</name>
+        <value>true</value>
+    <description>
+如果dfs.encrypt.data.transfer设置为true，则它将取代dfs.data.transfer.protection的设置，并强制所有连接必须使用专门的加密SASL握手。
+    </description>    
+    </property>
+</configuration>
+```
 
