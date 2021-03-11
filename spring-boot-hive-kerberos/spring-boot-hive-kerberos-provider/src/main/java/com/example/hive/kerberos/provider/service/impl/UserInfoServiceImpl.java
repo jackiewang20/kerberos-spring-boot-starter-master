@@ -1,5 +1,6 @@
 package com.example.hive.kerberos.provider.service.impl;
 
+import com.example.common.basic.EnumCode;
 import com.example.common.basic.ResponseJson;
 import com.example.hive.kerberos.provider.bean.UserInfoDO;
 import com.example.hive.kerberos.provider.bean.UserInfoQUERY;
@@ -63,14 +64,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 //            return result;
 //        }
         if("".equals(userInfoQUERY.getPageNow())){
-            result.setErrorCode(ResponseJson.EnumCode.CODE_PARAMETER_MISSING.getCode());
-            result.setErrorMsg(ResponseJson.EnumCode.CODE_PARAMETER_MISSING.getText()+" :pageNo");
+            result.setErrorCode(EnumCode.CODE_PARAMETER_MISSING.getCode());
+            result.setErrorMsg(EnumCode.CODE_PARAMETER_MISSING.getText()+" :pageNo");
             return result;
         }
 
         if("".equals(userInfoQUERY.getPageSize())){
-            result.setErrorCode(ResponseJson.EnumCode.CODE_PARAMETER_MISSING.getCode());
-            result.setErrorMsg(ResponseJson.EnumCode.CODE_PARAMETER_MISSING.getText()+" :pageSize");
+            result.setErrorCode(EnumCode.CODE_PARAMETER_MISSING.getCode());
+            result.setErrorMsg(EnumCode.CODE_PARAMETER_MISSING.getText()+" :pageSize");
             return result;
         }
 

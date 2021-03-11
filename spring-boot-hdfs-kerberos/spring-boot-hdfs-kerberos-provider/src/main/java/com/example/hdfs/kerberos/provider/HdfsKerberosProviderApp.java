@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author jackie wang
  * @since 2021/2/24 14:02
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.example.hdfs.kerberos.provider", "com.example.common"})
 public class HdfsKerberosProviderApp {
     @Autowired
     private KerberosObject kerberosObject;

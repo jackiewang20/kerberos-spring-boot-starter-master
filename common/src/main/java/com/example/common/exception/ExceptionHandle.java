@@ -2,6 +2,7 @@ package com.example.common.exception;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.example.common.basic.EnumCode;
 import com.example.common.basic.ResponseJson;
 import org.mybatis.spring.MyBatisSystemException;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -38,8 +41,8 @@ public class ExceptionHandle {
     @ResponseBody
     public String handleBadRequest(Exception e) {
         ResponseJson errJson = new ResponseJson();
-        errJson.setErrorCode(ResponseJson.EnumCode.CODE_PARAMETER_INVALID.getCode());
-        errJson.setErrorMsg(ResponseJson.EnumCode.CODE_PARAMETER_INVALID.getText());
+        errJson.setErrorCode(EnumCode.CODE_PARAMETER_INVALID.getCode());
+        errJson.setErrorMsg(EnumCode.CODE_PARAMETER_INVALID.getText());
         errJson.setData(e.getCause() == null ? e.toString() : e.getCause());
         return JSON.toJSONString(errJson);
     }
@@ -67,22 +70,38 @@ public class ExceptionHandle {
     public String handle(Exception e) {
         ResponseJson responseJson = new ResponseJson();
         if (e instanceof JSONException) {
-            responseJson.setErrorCode(ResponseJson.EnumCode.CODE_JSON_EXCEPTION.getCode());
-            responseJson.setErrorMsg(ResponseJson.EnumCode.CODE_JSON_EXCEPTION.getText());
+            responseJson.setErrorCode(EnumCode.CODE_JSON_EXCEPTION.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_JSON_EXCEPTION.getText());
             log.error("json异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+        } else if (e instanceof NullPointerException) {
+            responseJson.setErrorCode(EnumCode.CODE_PARAMETER_MISSING.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_PARAMETER_MISSING.getText() + e.getMessage());
+            log.error("空指针异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+        } else if (e instanceof IllegalArgumentException) {
+            responseJson.setErrorCode(EnumCode.CODE_PARAMETER_INVALID.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_PARAMETER_INVALID.getText() + e.getMessage());
+            log.error("参数无效异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+        } else if (e instanceof FileNotFoundException) {
+            responseJson.setErrorCode(EnumCode.CODE_NOT_FOUND_FILE.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_NOT_FOUND_FILE.getText() + e.getMessage());
+            log.error("文件没有发现异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+        }else if (e instanceof IOException) {
+            responseJson.setErrorCode(EnumCode.CODE_IO_EXCEPTION.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_IO_EXCEPTION.getText() + e.getMessage());
+            log.error("文件操作异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
         } else if (e instanceof MyBatisSystemException) {
             if (e.getCause() != null && e.getCause().getMessage().contains("java.sql.SQLException")) {
-                responseJson.setErrorCode(ResponseJson.EnumCode.CODE_DB_CONNECTION_TIMED.getCode());
-                responseJson.setErrorMsg(ResponseJson.EnumCode.CODE_DB_CONNECTION_TIMED.getText());
-                log.error("数据库链接异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+                responseJson.setErrorCode(EnumCode.CODE_DB_CONNECTION_TIMED.getCode());
+                responseJson.setErrorMsg(EnumCode.CODE_DB_CONNECTION_TIMED.getText());
+                log.error("数据库链接超时异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
             } else {
-                responseJson.setErrorCode(ResponseJson.EnumCode.CODE_DB_EXECUTION_EXCEPTION.getCode());
-                responseJson.setErrorMsg(ResponseJson.EnumCode.CODE_DB_EXECUTION_EXCEPTION.getText());
+                responseJson.setErrorCode(EnumCode.CODE_DB_EXECUTION_EXCEPTION.getCode());
+                responseJson.setErrorMsg(EnumCode.CODE_DB_EXECUTION_EXCEPTION.getText());
                 log.error("数据库执行异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
             }
         } else {
-            responseJson.setErrorCode(ResponseJson.EnumCode.CODE_EXCEPTION.getCode());
-            responseJson.setErrorMsg(ResponseJson.EnumCode.CODE_EXCEPTION.getText());
+            responseJson.setErrorCode(EnumCode.CODE_EXCEPTION.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_EXCEPTION.getText());
             log.error("服务异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
         }
         return JSON.toJSONString(responseJson);
