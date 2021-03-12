@@ -91,7 +91,7 @@ public class HdfsService {
      */
     public boolean mkdir(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return false;
+            throw new NullPointerException("Path cannot be empty.");
         }
         if (existFile(path)) {
             return true;
@@ -117,7 +117,7 @@ public class HdfsService {
      */
     public boolean existFile(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return false;
+            throw new NullPointerException("Path cannot be empty.");
         }
         FileSystem fs = getFileSystem();
         Path srcPath = new Path(path);
@@ -134,7 +134,7 @@ public class HdfsService {
      */
     public List<Map<String, Object>> readPathInfo(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return null;
+            throw new NullPointerException("Path cannot be empty.");
         }
         if (!existFile(path)) {
             return null;
@@ -166,9 +166,14 @@ public class HdfsService {
      * @throws Exception
      */
     public void createFile(String path, MultipartFile file) throws Exception {
-        if (StringUtils.isEmpty(path) || null == file.getBytes()) {
-            return;
+        if (StringUtils.isEmpty(path)) {
+            throw new NullPointerException("Path cannot be empty.");
         }
+
+        if (null == file || null == file.getBytes()) {
+            throw new NullPointerException("MultipartFile cannot be empty.");
+        }
+
         String fileName = file.getOriginalFilename();
         FileSystem fs = getFileSystem();
         FSDataOutputStream outputStream = null;
@@ -180,7 +185,7 @@ public class HdfsService {
             outputStream = fs.create(newPath);
             outputStream.write(file.getBytes());
         } catch (IOException e) {
-            throw new RuntimeException("[createFile()]File operation exception", e);
+            throw new IOException("[createFile()]File operation exception", e);
         } finally {
             close(outputStream);
         }
@@ -195,7 +200,7 @@ public class HdfsService {
      */
     public String readFile(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return null;
+            throw new NullPointerException("Path cannot be empty.");
         }
         if (!existFile(path)) {
             return null;
@@ -233,7 +238,7 @@ public class HdfsService {
      */
     public List<Map<String, String>> listFile(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return null;
+            throw new NullPointerException("Path cannot be empty.");
         }
         if (!existFile(path)) {
             return null;
@@ -262,28 +267,28 @@ public class HdfsService {
     /**
      * HDFS重命名文件
      *
-     * @param oldName
-     * @param newName
+     * @param oldFilePath
+     * @param newFilePath
      * @return
      * @throws Exception
      */
-    public boolean renameFile(String oldName, String newName) throws Exception {
+    public boolean renameFile(String oldFilePath, String newFilePath) throws Exception {
         boolean isOk = false;
-        if (StringUtils.isEmpty(oldName)) {
-            throw new NullPointerException("OldName Cannot be empty.");
+        if (StringUtils.isEmpty(oldFilePath)) {
+            throw new NullPointerException("OldName cannot be empty.");
         }
 
-        if (StringUtils.isEmpty(newName)) {
-            throw new NullPointerException("NewName Cannot be empty.");
+        if (StringUtils.isEmpty(newFilePath)) {
+            throw new NullPointerException("NewName cannot be empty.");
         }
 
         FileSystem fs = getFileSystem();
 
         try {
             // 原文件目标路径
-            Path oldPath = new Path(oldName);
+            Path oldPath = new Path(oldFilePath);
             // 重命名目标路径
-            Path newPath = new Path(newName);
+            Path newPath = new Path(newFilePath);
             isOk = fs.rename(oldPath, newPath);
         } catch (IOException e) {
             throw new IOException("Failed to rename file.", e);
@@ -300,7 +305,7 @@ public class HdfsService {
      */
     public boolean deleteFile(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return false;
+            throw new NullPointerException("Path cannot be empty.");
         }
         if (!existFile(path)) {
             return false;
@@ -319,20 +324,24 @@ public class HdfsService {
     /**
      * 上传HDFS文件
      *
-     * @param path
-     * @param uploadPath
+     * @param localFilePath 本地上传路径；
+     * @param uploadFilePath 目标路径
      * @throws Exception
      */
-    public void uploadFile(String path, String uploadPath) throws Exception {
-        if (StringUtils.isEmpty(path) || StringUtils.isEmpty(uploadPath)) {
-            return;
+    public void uploadFile(String localFilePath, String uploadFilePath) throws Exception {
+        if (StringUtils.isEmpty(localFilePath)) {
+            throw new NullPointerException("Path cannot be empty.");
         }
+        if (StringUtils.isEmpty(uploadFilePath)) {
+            throw new NullPointerException("uploadPath cannot be empty.");
+        }
+
         FileSystem fs = getFileSystem();
         try {
             // 上传路径
-            Path clientPath = new Path(path);
+            Path clientPath = new Path(localFilePath);
             // 目标路径
-            Path serverPath = new Path(uploadPath);
+            Path serverPath = new Path(uploadFilePath);
 
             // 调用文件系统的文件复制方法，第一个参数是否删除原文件true为删除，默认为false
             fs.copyFromLocalFile(false, clientPath, serverPath);
@@ -344,13 +353,16 @@ public class HdfsService {
     /**
      * 下载HDFS文件
      *
-     * @param path
-     * @param downloadPath
+     * @param path hdfs源文件路径；
+     * @param downloadPath 下载的本地路径；
      * @throws Exception
      */
     public void downloadFile(String path, String downloadPath) throws Exception {
-        if (StringUtils.isEmpty(path) || StringUtils.isEmpty(downloadPath)) {
-            return;
+        if (StringUtils.isEmpty(path)) {
+            throw new NullPointerException("Path cannot be empty.");
+        }
+        if (StringUtils.isEmpty(downloadPath)) {
+            throw new NullPointerException("downloadPath cannot be empty.");
         }
         FileSystem fs = getFileSystem();
         try {
@@ -374,9 +386,13 @@ public class HdfsService {
      * @throws Exception
      */
     public void copyFile(String sourcePath, String targetPath) throws Exception {
-        if (StringUtils.isEmpty(sourcePath) || StringUtils.isEmpty(targetPath)) {
-            return;
+        if (StringUtils.isEmpty(sourcePath)) {
+            throw new NullPointerException("sourcePath cannot be empty.");
         }
+        if (StringUtils.isEmpty(targetPath)) {
+            throw new NullPointerException("targetPath cannot be empty.");
+        }
+
         FileSystem fs = getFileSystem();
         // 原始文件路径
         Path oldPath = new Path(sourcePath);
@@ -407,14 +423,19 @@ public class HdfsService {
      */
     public byte[] openFileToBytes(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return null;
+            throw new NullPointerException("path cannot be empty.");
         }
         if (!existFile(path)) {
             return null;
         }
         FileSystem fs = getFileSystem();
+
         // 目标路径
         Path srcPath = new Path(path);
+        if(fs.isDirectory(srcPath)) {
+            throw new RuntimeException("Path error, cannot be directory.");
+        }
+
         try {
             FSDataInputStream inputStream = fs.open(srcPath);
             return IOUtils.readFullyToByteArray(inputStream);
@@ -432,7 +453,7 @@ public class HdfsService {
      */
     public BlockLocation[] getFileBlockLocations(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
-            return null;
+            throw new NullPointerException("path cannot be empty.");
         }
         if (!existFile(path)) {
             return null;

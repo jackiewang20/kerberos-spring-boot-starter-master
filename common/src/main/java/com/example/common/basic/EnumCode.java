@@ -4,7 +4,7 @@ public enum EnumCode {
     /**
      * 服务端异常
      */
-    CODE_EXCEPTION("Server exception.", "-1"),
+    CODE_EXCEPTION("Service exception.", "-1"),
     /**
      * 服务器请求正常
      */
@@ -61,6 +61,16 @@ public enum EnumCode {
      * 文件操作异常
      */
     CODE_IO_EXCEPTION("File operation exception.", "11"),
+
+    /**
+     * 请求的Controller方法协议不支持
+     */
+    CODE_WEB_REQUEST_NOT_SUPPORTED("The requested controller method protocol is not supported.", "12"),
+
+    /**
+     * 服务运行时异常
+     */
+    CODE_RUNTIME_EXCEPTION("Service runtime exception.", "13"),
 
     /**
      * 404

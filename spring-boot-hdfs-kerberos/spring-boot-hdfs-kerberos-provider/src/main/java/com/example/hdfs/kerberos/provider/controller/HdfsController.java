@@ -3,6 +3,8 @@ package com.example.hdfs.kerberos.provider.controller;
 import com.example.common.basic.EnumCode;
 import com.example.common.basic.ResultBean;
 import com.example.hdfs.kerberos.provider.configuration.HdfsService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.BlockLocation;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import java.util.Map;
  * @author jackie wang
  * @since 2021/3/10 16:37
  */
+@Api(value = "hadoop kerberos认证", tags = {"hadoop kerberos认证接口"})
 @RestController
 @RequestMapping("/hadoop/hdfs")
 public class HdfsController {
@@ -84,13 +87,14 @@ public class HdfsController {
     }
 
     /**
-     * 创建文件
+     * 创建/上传文件
      *
      * @param path
      * @return
      * @throws Exception
      */
-    @PostMapping("/createFile")
+    @PostMapping(value = "/createFile",consumes = "multipart/form-data")
+    @ApiOperation(value = "上传文件", notes = "上传文件", httpMethod="POST" )
     public ResultBean createFile(@RequestParam("path") String path, @RequestParam("file") MultipartFile file)
             throws Exception {
         if (StringUtils.isEmpty(path) || null == file.getBytes()) {
@@ -111,7 +115,7 @@ public class HdfsController {
     public ResultBean readFile(@RequestParam("path") String path) throws Exception {
         String content = hdfsService.readFile(path);
         LOGGER.info("读取HDFS文件内容");
-        return new ResultBean(EnumCode.CODE_OK.getCode(), content);
+        return new ResultBean(EnumCode.CODE_OK.getCode(), EnumCode.CODE_OK.getText(), content);
     }
 
     /**
@@ -148,18 +152,18 @@ public class HdfsController {
     /**
      * 重命名文件
      *
-     * @param oldName
-     * @param newName
+     * @param oldFilePath
+     * @param newFilePath
      * @return
      * @throws Exception
      */
     @PostMapping("/renameFile")
-    public ResultBean<String> renameFile(@RequestParam("oldName") String oldName, @RequestParam("newName") String newName)
+    public ResultBean<String> renameFile(@RequestParam("oldFilePath") String oldFilePath, @RequestParam("newFilePath") String newFilePath)
             throws Exception {
-        if (StringUtils.isEmpty(oldName) || StringUtils.isEmpty(newName)) {
+        if (StringUtils.isEmpty(oldFilePath) || StringUtils.isEmpty(newFilePath)) {
             return new ResultBean<>(EnumCode.CODE_PARAMETER_MISSING.getCode(), "请求参数为空");
         }
-        boolean isOk = hdfsService.renameFile(oldName, newName);
+        boolean isOk = hdfsService.renameFile(oldFilePath, newFilePath);
         if (isOk) {
             return new ResultBean<>("文件重命名成功");
         } else {
@@ -189,15 +193,15 @@ public class HdfsController {
     /**
      * 上传文件
      *
-     * @param path
-     * @param uploadPath
+     * @param localFilePath
+     * @param uploadFilePath
      * @return
      * @throws Exception
      */
     @PostMapping("/uploadFile")
-    public ResultBean uploadFile(@RequestParam("path") String path, @RequestParam("uploadPath") String uploadPath)
+    public ResultBean uploadFile(@RequestParam("localFilePath") String localFilePath, @RequestParam("uploadFilePath") String uploadFilePath)
             throws Exception {
-        hdfsService.uploadFile(path, uploadPath);
+        hdfsService.uploadFile(localFilePath, uploadFilePath);
         LOGGER.info("upload file success.");
         return new ResultBean();
     }

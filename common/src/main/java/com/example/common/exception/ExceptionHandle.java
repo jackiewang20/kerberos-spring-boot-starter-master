@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -84,11 +85,18 @@ public class ExceptionHandle {
         } else if (e instanceof FileNotFoundException) {
             responseJson.setErrorCode(EnumCode.CODE_NOT_FOUND_FILE.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_NOT_FOUND_FILE.getText() + e.getMessage());
-            log.error("文件没有发现异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
         }else if (e instanceof IOException) {
             responseJson.setErrorCode(EnumCode.CODE_IO_EXCEPTION.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_IO_EXCEPTION.getText() + e.getMessage());
             log.error("文件操作异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+        }else if (e instanceof RuntimeException) {
+            responseJson.setErrorCode(EnumCode.CODE_RUNTIME_EXCEPTION.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_RUNTIME_EXCEPTION.getText() + e.getMessage());
+            log.error("运行时异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+        }else if (e instanceof HttpRequestMethodNotSupportedException) {
+            responseJson.setErrorCode(EnumCode.CODE_WEB_REQUEST_NOT_SUPPORTED.getCode());
+            responseJson.setErrorMsg(EnumCode.CODE_WEB_REQUEST_NOT_SUPPORTED.getText() + e.getMessage());
+            log.error("HTTP请求方法协议不支持异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
         } else if (e instanceof MyBatisSystemException) {
             if (e.getCause() != null && e.getCause().getMessage().contains("java.sql.SQLException")) {
                 responseJson.setErrorCode(EnumCode.CODE_DB_CONNECTION_TIMED.getCode());
