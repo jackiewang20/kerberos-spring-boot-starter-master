@@ -2,7 +2,7 @@ package com.example.hdfs.kerberos.provider.controller;
 
 import com.example.common.basic.EnumCode;
 import com.example.common.basic.ResultBean;
-import com.example.hdfs.kerberos.provider.configuration.HdfsService;
+import com.example.hdfs.starter.component.HdfsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -93,14 +93,14 @@ public class HdfsController {
      * @return
      * @throws Exception
      */
-    @PostMapping(value = "/createFile",consumes = "multipart/form-data")
+    @PostMapping(value = "/upload",consumes = "multipart/form-data")
     @ApiOperation(value = "上传文件", notes = "上传文件", httpMethod="POST" )
-    public ResultBean createFile(@RequestParam("path") String path, @RequestParam("file") MultipartFile file)
+    public ResultBean upload(@RequestParam("path") String path, @RequestParam("file") MultipartFile file)
             throws Exception {
         if (StringUtils.isEmpty(path) || null == file.getBytes()) {
             return new ResultBean(EnumCode.CODE_PARAMETER_MISSING.getCode(), "请求参数为空");
         }
-        hdfsService.createFile(path, file);
+        hdfsService.uploadCreateFile(path, file);
         return new ResultBean(EnumCode.CODE_OK.getCode(), EnumCode.CODE_OK + "创建文件成功");
     }
 
@@ -201,7 +201,7 @@ public class HdfsController {
     @PostMapping("/uploadFile")
     public ResultBean uploadFile(@RequestParam("localFilePath") String localFilePath, @RequestParam("uploadFilePath") String uploadFilePath)
             throws Exception {
-        hdfsService.uploadFile(localFilePath, uploadFilePath);
+        hdfsService.uploadOverwriteFile(localFilePath, uploadFilePath);
         LOGGER.info("upload file success.");
         return new ResultBean();
     }

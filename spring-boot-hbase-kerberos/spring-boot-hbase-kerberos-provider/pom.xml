@@ -20,9 +20,8 @@
         排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
         <!-- 自定义kerberos认证stater -->
         <dependency>
-            <artifactId>kerberos-spring-boot-stater</artifactId>
+            <artifactId>kerberos-spring-boot-starter</artifactId>
             <groupId>com.example</groupId>
-            <version>1.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hadoop-common</artifactId>
@@ -34,15 +33,29 @@
         <dependency>
             <artifactId>hbase-spring-boot-stater</artifactId>
             <groupId>com.example</groupId>
-            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hadoop-auth</artifactId>
+                    <groupId>org.apache.hadoop</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- 依赖新版本的guava -->
-<!--        <dependency>
-            <groupId>com.google.guava</groupId>
-            <version>21.0</version>
-            <artifactId>guava</artifactId>
-        </dependency>-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-auth</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
 

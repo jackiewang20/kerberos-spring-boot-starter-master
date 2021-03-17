@@ -7,6 +7,7 @@ import com.example.common.basic.ResponseJson;
 import org.mybatis.spring.MyBatisSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -65,11 +66,40 @@ public class ExceptionHandle {
         return errorMap;
     }
 
+
+    public ResponseJson mybatisException(Exception e, ResponseJson responseJson) {
+        // 使用反射判断MyBatisSystemException类是否存在
+        try {
+            Class<?> aClass = Class.forName("org.mybatis.spring.MyBatisSystemException");
+
+            if(e instanceof MyBatisSystemException) {
+                if (e.getCause() != null && e.getCause().getMessage().contains("java.sql.SQLException")) {
+                    responseJson.setErrorCode(EnumCode.CODE_DB_CONNECTION_TIMED.getCode());
+                    responseJson.setErrorMsg(EnumCode.CODE_DB_CONNECTION_TIMED.getText());
+                    log.error("数据库链接超时异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+                } else {
+                    responseJson.setErrorCode(EnumCode.CODE_DB_EXECUTION_EXCEPTION.getCode());
+                    responseJson.setErrorMsg(EnumCode.CODE_DB_EXECUTION_EXCEPTION.getText());
+                    log.error("数据库执行异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
+                }
+            }
+        } catch (ClassNotFoundException classNotFoundException) {
+        }
+
+        return responseJson;
+    }
+
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String handle(Exception e) {
         ResponseJson responseJson = new ResponseJson();
+
+        ResponseJson responseJson1 = mybatisException(e, responseJson);
+        if(!responseJson1.getErrorCode().equals(EnumCode.CODE_OK.getCode())) {
+            return JSON.toJSONString(responseJson);
+        }
+
         if (e instanceof JSONException) {
             responseJson.setErrorCode(EnumCode.CODE_JSON_EXCEPTION.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_JSON_EXCEPTION.getText());
@@ -85,28 +115,18 @@ public class ExceptionHandle {
         } else if (e instanceof FileNotFoundException) {
             responseJson.setErrorCode(EnumCode.CODE_NOT_FOUND_FILE.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_NOT_FOUND_FILE.getText() + e.getMessage());
-        }else if (e instanceof IOException) {
+        } else if (e instanceof IOException) {
             responseJson.setErrorCode(EnumCode.CODE_IO_EXCEPTION.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_IO_EXCEPTION.getText() + e.getMessage());
             log.error("文件操作异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
-        }else if (e instanceof RuntimeException) {
+        } else if (e instanceof RuntimeException) {
             responseJson.setErrorCode(EnumCode.CODE_RUNTIME_EXCEPTION.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_RUNTIME_EXCEPTION.getText() + e.getMessage());
             log.error("运行时异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
-        }else if (e instanceof HttpRequestMethodNotSupportedException) {
+        } else if (e instanceof HttpRequestMethodNotSupportedException) {
             responseJson.setErrorCode(EnumCode.CODE_WEB_REQUEST_NOT_SUPPORTED.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_WEB_REQUEST_NOT_SUPPORTED.getText() + e.getMessage());
             log.error("HTTP请求方法协议不支持异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
-        } else if (e instanceof MyBatisSystemException) {
-            if (e.getCause() != null && e.getCause().getMessage().contains("java.sql.SQLException")) {
-                responseJson.setErrorCode(EnumCode.CODE_DB_CONNECTION_TIMED.getCode());
-                responseJson.setErrorMsg(EnumCode.CODE_DB_CONNECTION_TIMED.getText());
-                log.error("数据库链接超时异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
-            } else {
-                responseJson.setErrorCode(EnumCode.CODE_DB_EXECUTION_EXCEPTION.getCode());
-                responseJson.setErrorMsg(EnumCode.CODE_DB_EXECUTION_EXCEPTION.getText());
-                log.error("数据库执行异常:{},详细信息:", e.getCause() == null ? e.toString() : e.getCause(), e);
-            }
         } else {
             responseJson.setErrorCode(EnumCode.CODE_EXCEPTION.getCode());
             responseJson.setErrorMsg(EnumCode.CODE_EXCEPTION.getText());

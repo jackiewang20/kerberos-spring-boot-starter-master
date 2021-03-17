@@ -8,7 +8,7 @@ import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
 
 /**
- * consul 服务id注册时根据规则命名。
+ * consul服务id注册时根据规则命名。
  * 更多参考：https://blog.csdn.net/ErickPang/article/details/84558228
  */
 public class ServiceIdRegister extends ConsulServiceRegistry {
