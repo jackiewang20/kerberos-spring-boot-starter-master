@@ -1,87 +1,67 @@
-#hbase-spring-boot-starter集成kerberos操作hbase
+#1.hbase-spring-boot-starter集成kerberos操作hbase
 
-#1.背景
+##1.1.背景
 使用自定义kerberos-spring-boot-starter，hbase-spring-boot-starter组件进行开发。
 
 由于大数据平台hadoop和hbase集群集成了kerberos验证，因此链接hbase之前首先进行kerberos身份认证，认证通过后可以访问hbase数据库。
 
-#2.maven依赖
-##2.1.kerberos-spring-boot-starter maven依赖
+##1.2.maven依赖
+###1.2.1.kerberos-spring-boot-starter maven依赖
         <!-- kerberos starter和hbase starter分别都引用了hadoop-common，两个hadoop-common包冲突，
         排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
 
-###方法1
+####方法1
 ```
-         <dependency>
-             <artifactId>kerberos-spring-boot-starter</artifactId>
-             <groupId>com.example</groupId>
-             <version>1.0.0-SNAPSHOT</version>
-             <exclusions>
-                 <exclusion>
-                     <artifactId>hadoop-common</artifactId>
-                     <groupId>org.apache.hadoop</groupId>
-                 </exclusion>
-             </exclusions>
-         </dependency>       
-```   
-     
-###方法2
-```
-        <!-- 自定义kerberos认证starter -->
+        <!-- 自定义kerberos认证stater -->
         <dependency>
             <artifactId>kerberos-spring-boot-starter</artifactId>
             <groupId>com.example</groupId>
             <version>1.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
+                    <artifactId>hadoop-common</artifactId>
+                    <groupId>org.apache.hadoop</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        <!-- 依赖新版本的guava -->
+
+```   
+ 
+
+###1.2.2.hbase-spring-boot-starter maven依赖
+
+```
+        <!-- 自定义hbase stater -->
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <version>21.0</version>
-            <artifactId>guava</artifactId>
+            <artifactId>hbase-spring-boot-stater</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hadoop-auth</artifactId>
+                    <groupId>org.apache.hadoop</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-```
 
-###方法3
-
-```
         <dependency>
             <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
+            <artifactId>hadoop-auth</artifactId>
             <version>3.1.4</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
-            <exclusions>
-        </dependency>
-
-        <!-- 依赖新版本的guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <version>21.0</version>
-            <artifactId>guava</artifactId>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 ```
 
-
-##2.2.hbase-spring-boot-starter maven依赖
-
-        <!-- 自定义hbase starter -->
-        <dependency>
-            <artifactId>hbase-spring-boot-starter</artifactId>
-            <groupId>com.example</groupId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
-#3.属性配置
+##1.3.属性配置
 配置文件属性配置hbase.keytab、jaas.conf、krb5.conf，启动krb5.conf完整的配置信息从kerberos服务器中复制。
 
 完整配置参考：
@@ -93,7 +73,7 @@ application-hbase.properties
 说明：如果不使用application-hbase.properties中的kerberos认证，则在resources文件夹中配置hbase-site.xml，
 但是这样会存在弊端，如果kerberos认证账号等属性配置修改，需要重新更新该文件，并部署项目。
 
-#4.测试
+##1.4.测试
 HBaseProviderApp测试服务
 启动类HbaseKerberosProviderApp，声明KerberosObject初始化Bean，优先加装kerberos。
 
@@ -113,8 +93,48 @@ public class HbaseKerberosProviderApp {
 
 但是，在客户端服务中引入了两个starter组件，优先加载顺序实际根据主程序具体调用的某个starter中的bean优先加载。
 
-#5.Q&A
-##5.1.Q:guava-18.0.jar多个版本jar包冲突
+#2.hdfs-spring-boot-starter集成kerberos操作hadoop
+
+##2.1.背景
+使用自定义kerberos-spring-boot-starter，hdfs-spring-boot-starter组件进行开发。
+
+大数据平台hadoop集群集成kerberos验证。
+
+##2.2.maven依赖
+###2.2.1.kerberos-spring-boot-starter maven依赖
+        <!-- kerberos starter和hdfs starter分别都引用了hadoop-common，两个hadoop-common包冲突，
+        排除其一个hadoop-common即可；如果造成krb5.conf不能正确读取，则排除guava包 -->
+
+```
+        <!-- 自定义kerberos认证stater -->
+        <dependency>
+            <artifactId>kerberos-spring-boot-starter</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hadoop-common</artifactId>
+                    <groupId>org.apache.hadoop</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+```   
+ 
+
+###2.2.2.hdfs-spring-boot-starter maven依赖
+
+```
+        <!-- 自定义hdfs starter -->
+        <dependency>
+            <artifactId>hdfs-spring-boot-starter</artifactId>
+            <groupId>com.example</groupId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+```
+
+#3.Q&A
+##3.1.Q:guava-18.0.jar多个版本jar包冲突
 R:
 Description:
 
@@ -132,6 +152,8 @@ Action:
 Correct the classpath of your application so that it contains a single, compatible version of com.google.common.base.Preconditions
 
 A:
+
+###方法1
 ```
         <!-- kerberos starter和hbase starter分别都引用了hadoop-common，两个hadoop-common包依赖guava冲突，
         排除即可；不用排除整个hadoop-common,否则造成krb5.conf不能正确读取 -->
@@ -155,8 +177,8 @@ A:
             <artifactId>guava</artifactId>
         </dependency>
 ```
-或
 
+###方法2
 ```
         <dependency>
             <groupId>org.apache.hadoop</groupId>
